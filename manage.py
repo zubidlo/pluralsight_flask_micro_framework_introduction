@@ -2,7 +2,8 @@
 """
 databese manager script
 """
-from thermos import db, app, User
+from thermos import db, app
+from thermos.models import User
 from flask_script import Manager, prompt_bool
 
 manager = Manager(app)
