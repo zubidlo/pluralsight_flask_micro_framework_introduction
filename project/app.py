@@ -1,24 +1,31 @@
-from flask import Flask, render_template, url_for
+"""
+flask app
+"""
+from datetime import datetime
+from flask import Flask, render_template, url_for, request, redirect, flash
+from forms import BookmarkForm
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = '\x93\x94!q\xdeV\xdcb\x93-\x81$@\xe2S\xd0\xa2\xbdw\xd9\xe6m$%'
 
+bookmarks = []
 
-class User(object):
+def store_booksmark(url, description):
     """
-    User
+    stores bookmark to global list bookmarks
     """
-    def __init__(self, firstname, lastname):
-        self.firstname = firstname
-        self.lastname = lastname
+    bookmarks.append(dict(
+        url=url,
+        description=description,
+        user="martin",
+        date=datetime.utcnow()
+    ))
 
-    def initials(self):
-        """
-        initials
-        """
-        return "{}. {}.".format(self.firstname[0], self.lastname[0])
-
-    def __str__(self):
-        return "{} {}".format(self.firstname, self.lastname)
+def new_bookmarks(num):
+    """
+    returns last num bookmarks
+    """
+    return sorted(bookmarks, key=lambda bm: bm['date'], reverse=True)[:num]
 
 @app.route('/')
 @app.route('/index')
@@ -26,14 +33,23 @@ def index():
     """
     index.html template
     """
-    return render_template('index.html')
+    return render_template('index.html', new_bookmarks=new_bookmarks(5))
 
-@app.route('/add')
+@app.route('/add', methods=['GET', 'POST'])
 def add():
     """
     add.html template
     """
-    return render_template('add.html')
+    form = BookmarkForm()
+
+    if form.validate_on_submit():
+        url, description = form.url.data, form.description.data
+        store_booksmark(url, description)
+        flash("Stored bookmark '{}'".format(description))
+        return redirect(url_for('index'))
+
+    print form
+    return render_template('add.html', form=form)
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -50,4 +66,4 @@ def server_error(e):
     return render_template('500.html'), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
