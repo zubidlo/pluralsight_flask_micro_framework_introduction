@@ -14,8 +14,8 @@ def initdb():
     creates database
     """
     db.create_all()
-    db.session.add(User(username='zubidlo', email='zubidlo@gmail.com'))
-    db.session.add(User(username='tomaszuber', email='tomaszuber@gmail.com'))
+    db.session.add(User(username='zubidlo', email='zubidlo@gmail.com', password="password"))
+    db.session.add(User(username='tomaszuber', email='tomaszuber@gmail.com', password="password"))
     db.session.commit()
     print "Initialized the database"
 

@@ -4,6 +4,8 @@ ORM models
 from thermos import db
 from datetime import datetime
 from sqlalchemy import desc
+from flask_login import UserMixin
+from werkzeug.security import check_password_hash, generate_password_hash
 
 class Bookmark(db.Model):
     """
@@ -26,7 +28,7 @@ class Bookmark(db.Model):
         return "'{}': '{}'".format(self.description, self.url)
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     """
     User ORM model
     """
@@ -34,6 +36,48 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
     bookmarks = db.relationship('Bookmark', backref='user', lazy='dynamic')
+    password_hash = db.Column(db.String)
+
+    @property
+    def password(self):
+        """
+        getter not implemented
+        """
+        raise AttributeError('password: write-only filed')
+
+    @password.setter
+    def password(self, password):
+        """
+        password setter
+        """
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        """
+        check password
+        """
+        return check_password_hash(self.password_hash, password)
+
+    @staticmethod
+    def get_by_username(username):
+        """
+        get by username
+        """
+        return User.query.filter_by(username=username).first()
+
+    @staticmethod
+    def get_by_id(userid):
+        """
+        get by id
+        """
+        return User.query.get(int(userid))
+
+    @staticmethod
+    def get_by_email(email):
+        """
+        get by email
+        """
+        return User.query.filter_by(email=email).first()
 
     def __repr__(self):
         return "{}".format(self.username)
