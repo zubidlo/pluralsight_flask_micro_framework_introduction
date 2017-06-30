@@ -4,6 +4,7 @@ import os
 from flask import Flask, render_template, url_for, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_moment import Moment
 
 app = Flask(__name__)
 
@@ -20,6 +21,9 @@ login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'login'
 login_manager.init_app(app)
+
+# for displaying timestamps (flask-moment)
+moment = Moment(app)
 
 import models
 import views

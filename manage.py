@@ -3,21 +3,36 @@
 databese manager script
 """
 from thermos import db, app
-from thermos.models import User
+from thermos.models import User, Bookmark, Tag
 from flask_script import Manager, prompt_bool
+from flask_migrate import Migrate, MigrateCommand
 
 manager = Manager(app)
+migrate = Migrate(app, db)
+
+manager.add_command('db', MigrateCommand)
 
 @manager.command
-def initdb():
+def insert_data():
     """
     creates database
     """
     db.create_all()
-    db.session.add(User(username='zubidlo', email='zubidlo@gmail.com', password="password"))
-    db.session.add(User(username='tomaszuber', email='tomaszuber@gmail.com', password="password"))
+    zubidlo = User(username='zubidlo', email='zubidlo@gmail.com', password="password")
+    db.session.add(zubidlo)
+
+    def add_bookmark(url, description, tags):
+        db.session.add(Bookmark(url=url, description=description, user=zubidlo, tags=tags))
+
+    for name in ['python', 'flask', 'programming']:
+        db.session.add(Tag(name=name))
+
+    add_bookmark("http://www.pluralsight.com", "Hardcore development traininng.", "programming")
+    add_bookmark("http://www.python.org", "My favourite language", "python")
+    add_bookmark("http://www.flask.pocaa.org", "Web development", "flask")
+
     db.session.commit()
-    print "Initialized the database"
+    print "inserted the data"
 
 @manager.command
 def dropdb():
