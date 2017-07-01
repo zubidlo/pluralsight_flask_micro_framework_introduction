@@ -201,7 +201,7 @@ ul.bookmarks {
     padding-left: 0;
 }
 
-ul.bookmarks li {
+.bookmark {
     padding-bottom: .5em;
     border-top: 1px solid #7ea6bf;
     padding: 1em 0;

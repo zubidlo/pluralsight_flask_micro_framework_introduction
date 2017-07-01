@@ -6,10 +6,10 @@
         <title>{% block title %}{% endblock %}</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.min.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-
+        {% block styles %}
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.min.css') }}">
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        {% endblock %}
         <script src="{{ url_for('static', filename='js/vendor/modernizr-2.8.3-respond-1.4.2.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/main.js') }}"></script>
         {{ moment.include_jquery() }}
@@ -55,8 +55,10 @@
 
                 {% block sidebar %}
                     <aside>
-                        <h3>aside</h3>
-                        <p>bla bla</p> 
+                        <h3>Tags</h3>
+                        {% for t in all_tags() %}
+                            <a href="{{ url_for('tag', name=t) }}">{{ t }}</a>
+                        {% endfor %}
                     </aside>
                 {% endblock %}
             </div> <!-- #main -->
@@ -68,5 +70,8 @@
             </footer>
         </div>
 
+    {% block scripts %}
+    {% endblock %}
+    
     </body>
 </html>

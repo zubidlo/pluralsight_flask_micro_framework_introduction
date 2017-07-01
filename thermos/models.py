@@ -31,6 +31,21 @@ class Bookmark(db.Model):
         """
         return Bookmark.query.order_by(desc(Bookmark.date)).limit(num)
 
+    @property
+    def tags(self):
+        """
+        tags
+        """
+        return ','.join(t.name for t in self._tags)
+
+    @tags.setter
+    def tags(self, string):
+        """
+        tags setter
+        """
+        if string:
+            self._tags = [Tag.get_or_create(name) for name in string.split(',')]
+
     def __repr__(self):
         return "'{}': '{}'".format(self.description, self.url)
 
@@ -96,6 +111,23 @@ class Tag(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(25), nullable=False, unique=True, index=True)
+
+    @staticmethod
+    def get_or_create(name):
+        """
+        get or create tag
+        """
+        try:
+            return Tag.query.filter_by(name=name).one()
+        except:
+            return Tag(name=name)
+
+    @staticmethod
+    def all():
+        """
+        all tags
+        """
+        return Tag.query.all()
 
     def __repr__(self):
         return self.name
